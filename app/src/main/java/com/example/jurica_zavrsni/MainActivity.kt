@@ -96,9 +96,6 @@ fun glavna(){
     var ukupniUlog by remember {
         mutableStateOf(bankUlog+ulog)
     }
-    val openDialog by remember {
-        mutableStateOf(false)
-    }
     var bojaProfit by remember {
         mutableStateOf("#000000")
     }
@@ -378,7 +375,12 @@ fun glavna(){
             }
             Spacer(modifier = Modifier.width(5.dp))
             Button(onClick = {
-                  ulog=bankUlog
+                if(stanje< bankUlog){
+                    ulog=stanje
+                }
+                else{
+                    ulog=bankUlog
+                }
                 ukupniUlog= bankUlog+ulog
             },
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue, contentColor = Color.White),
