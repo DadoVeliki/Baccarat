@@ -246,7 +246,7 @@ fun glavna(){
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Button(onClick = {
-                stanje-=ulog
+                //stanje-=ulog
                 bankUlog=(1..1000).random()
                 do{
                     rn1=(1..51).random()
@@ -270,23 +270,41 @@ fun glavna(){
                     }
                     if(zbroj1>zbroj2){//bankar ima veći zbroj
                        when(oklada){
-                           "SEBE"->stanje-=ulog
-                           "IZJEDNAČENO"->stanje-=ulog
-                           "BANKARA"->stanje+=ukupniUlog
+                           "SEBE"->{
+                               stanje-=ulog
+                           }
+                           "IZJEDNAČENO"->{
+                               stanje-=ulog
+                           }
+                           "BANKARA"->{
+                               stanje+=ukupniUlog
+                           }
                        }
                     }
                     else if(zbroj1<zbroj2){
                         when(oklada){
-                            "SEBE"->stanje+=ukupniUlog
-                            "IZJEDNAČENO"->stanje-=ulog
-                            "BANKARA"->stanje-=ulog
+                            "SEBE"->{
+                                stanje+=ukupniUlog
+                            }
+                            "IZJEDNAČENO"->{
+                                stanje-=ulog
+                            }
+                            "BANKARA"->{
+                                stanje-=ulog
+                            }
                         }
                     }
                     else{
                         when(oklada){
-                            "SEBE"->stanje-=ulog
-                            "IZJEDNAČENO"->stanje+=ukupniUlog
-                            "BANKARA"->stanje-=ulog
+                            "SEBE"->{
+                                stanje-=ulog
+                            }
+                            "IZJEDNAČENO"->{
+                                stanje+=ukupniUlog
+                            }
+                            "BANKARA"->{
+                                stanje-=ulog
+                            }
                         }
                     }
                 }
@@ -329,7 +347,7 @@ fun glavna(){
             modifier = Modifier
                 .background(Color.White)
                 .padding(10.dp)
-                .align(Alignment.End)
+                .align(Alignment.CenterHorizontally)
         ) {
             Text(text = "Stanje na računu: $stanje€",
             fontWeight = FontWeight.Bold)
