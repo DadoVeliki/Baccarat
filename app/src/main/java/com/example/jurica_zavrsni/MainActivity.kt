@@ -2,15 +2,20 @@ package com.example.jurica_zavrsni
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
@@ -23,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import com.example.jurica_zavrsni.ui.theme.Jurica_zavrsniTheme
 import java.util.*
@@ -78,6 +84,9 @@ fun glavna(){
     var dobiveno by remember {
         mutableStateOf(0)
     }
+    var poruka by remember{
+        mutableStateOf("")
+    }
     var stanje by remember {
         mutableStateOf(1000)
     }
@@ -87,6 +96,12 @@ fun glavna(){
     var ukupniUlog by remember {
         mutableStateOf(bankUlog+ulog)
     }
+    val openDialog by remember {
+        mutableStateOf(false)
+    }
+    var bojaProfit by remember {
+        mutableStateOf("#000000")
+    }
     Column(
         Modifier
             .fillMaxWidth()
@@ -95,19 +110,27 @@ fun glavna(){
     ) {
         Spacer(modifier = Modifier.height(20.dp))
         Row() {
+            Spacer(modifier = Modifier.width(100.dp))
             Column(
                 modifier = Modifier.background(Color.White)
             ) {
 
                 Text(text = "BANKAROV ULOG: $bankUlog €",
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(10.dp)
 
                 )
             }
         }
         Spacer(modifier = Modifier.height(20.dp))
+        Row(){
+        Spacer(modifier = Modifier.width(50.dp))
         Column(
-            modifier = Modifier.width(400.dp),
+            modifier = Modifier
+                .width(300.dp)
+                .clip(shape = RoundedCornerShape(20.dp))
+                .background(Color("#FF0000".toColorInt()))
+                .padding(bottom = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = "BANKAR",
@@ -127,11 +150,16 @@ fun glavna(){
                     obrnuta(karte.get(rn3).slika)
                 }
             }
-        }
+        }}
         Spacer(modifier = Modifier.height(20.dp))
         Row() {
+            Spacer(modifier = Modifier.width(50.dp))
             Column(
-                modifier = Modifier.width(400.dp),
+                modifier = Modifier
+                    .width(300.dp)
+                    .clip(shape = RoundedCornerShape(20.dp))
+                    .background(Color("#FFBD00".toColorInt()))
+                    .padding(top = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
@@ -155,14 +183,14 @@ fun glavna(){
                 )
             }
     }
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         Row (
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
             horizontalArrangement = Arrangement.Center
                 ){
-            Text(text = "UKUPNI ULOG: $ukupniUlog €")
+            Text(text = "UKUPNI ULOG: $ukupniUlog €",color=Color.White, fontWeight = FontWeight.Bold)
         }
         Row(
             modifier = Modifier
@@ -202,7 +230,7 @@ fun glavna(){
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center ){
             Text(text = "ULOG:",
-                fontSize = 30.sp
+                fontSize = 30.sp,color=Color.White
             )
             Spacer(modifier = Modifier.width(20.dp))
             Button(onClick = {
@@ -245,84 +273,104 @@ fun glavna(){
         Row(
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Button(onClick = {
-                //stanje-=ulog
-                bankUlog=(1..1000).random()
-                do{
-                    rn1=(1..51).random()
-                    rn2=(1..51).random()
-                    rn3=(1..51).random()
-                    rn4=(1..51).random()
-                    rn5=(1..51).random()
-                    rn6=(1..51).random()
-                }while(rn1==rn2 || rn1==rn3 || rn1==rn4 || rn1==rn5 || rn1==rn6 || rn2==rn3 || rn2==rn4 || rn2==rn5 || rn2==rn6 || rn3==rn4 || rn3==rn5 || rn3==rn6 || rn4==rn5 || rn4==rn6 || rn5==rn6)
+            Button(
 
-                var zbroj1=karte.get(rn1).vrijednost+karte.get(rn2).vrijednost
-                var zbroj2=karte.get(rn4).vrijednost+karte.get(rn5).vrijednost
-                if((zbroj1!=8 && zbroj1!=9) || (zbroj2!=8 && zbroj2!=9)){
-                    zbroj1+=karte.get(rn3).vrijednost
-                    zbroj2+=karte.get(rn6).vrijednost
-                    while(zbroj1>10){
-                        zbroj1-=10
-                    }
-                    while(zbroj2>10){
-                        zbroj2-=10
-                    }
-                    if(zbroj1>zbroj2){//bankar ima veći zbroj
-                       when(oklada){
-                           "SEBE"->{
-                               stanje-=ulog
-                           }
-                           "IZJEDNAČENO"->{
-                               stanje-=ulog
-                           }
-                           "BANKARA"->{
-                               stanje+=ukupniUlog
-                           }
-                       }
-                    }
-                    else if(zbroj1<zbroj2){
-                        when(oklada){
-                            "SEBE"->{
-                                stanje+=ukupniUlog
+                onClick = {
+                        //if(stanje>0){
+                        //stanje-=ulog
+                        bankUlog = (1..1000).random()
+                        do {
+                            rn1 = (1..51).random()
+                            rn2 = (1..51).random()
+                            rn3 = (1..51).random()
+                            rn4 = (1..51).random()
+                            rn5 = (1..51).random()
+                            rn6 = (1..51).random()
+                        } while (rn1 == rn2 || rn1 == rn3 || rn1 == rn4 || rn1 == rn5 || rn1 == rn6 || rn2 == rn3 || rn2 == rn4 || rn2 == rn5 || rn2 == rn6 || rn3 == rn4 || rn3 == rn5 || rn3 == rn6 || rn4 == rn5 || rn4 == rn6 || rn5 == rn6)
+
+                        var zbroj1 = karte.get(rn1).vrijednost + karte.get(rn2).vrijednost
+                        var zbroj2 = karte.get(rn4).vrijednost + karte.get(rn5).vrijednost
+                        if ((zbroj1 != 8 && zbroj1 != 9) || (zbroj2 != 8 && zbroj2 != 9)) {
+                            zbroj1 += karte.get(rn3).vrijednost
+                            zbroj2 += karte.get(rn6).vrijednost
+                            while (zbroj1 > 10) {
+                                zbroj1 -= 10
                             }
-                            "IZJEDNAČENO"->{
-                                stanje-=ulog
+                            while (zbroj2 > 10) {
+                                zbroj2 -= 10
                             }
-                            "BANKARA"->{
-                                stanje-=ulog
+                            if (zbroj1 > zbroj2) {//bankar ima veći zbroj
+                                when (oklada) {
+                                    "SEBE" -> {
+                                        stanje -= ulog
+                                        poruka = "IZGUBIO SI $ulog"
+                                    }
+                                    "IZJEDNAČENO" -> {
+                                        stanje -= ulog
+                                        poruka = "IZGUBIO SI $ulog"
+                                    }
+                                    "BANKARA" -> {
+                                        stanje += ukupniUlog
+                                        poruka = "OSVOJIO SI $ukupniUlog"
+                                    }
+                                }
+                            } else if (zbroj1 < zbroj2) {
+                                when (oklada) {
+                                    "SEBE" -> {
+                                        stanje += ukupniUlog
+                                        poruka = "OSVOJIO SI $ukupniUlog"
+                                    }
+                                    "IZJEDNAČENO" -> {
+                                        stanje -= ulog
+                                        poruka = "IZGUBIO SI $ulog"
+                                    }
+                                    "BANKARA" -> {
+                                        stanje -= ulog
+                                        poruka = "IZGUBIO SI $ulog"
+                                    }
+                                }
+                            } else {
+                                when (oklada) {
+                                    "SEBE" -> {
+                                        stanje -= ulog
+                                    }
+                                    "IZJEDNAČENO" -> {
+                                        stanje += ukupniUlog
+                                    }
+                                    "BANKARA" -> {
+                                        stanje -= ulog
+                                    }
+                                }
+                            }
+                        } else {
+                            while (zbroj1 > 10) {
+                                zbroj1 -= 10
+                            }
+                            while (zbroj2 > 10) {
+                                zbroj2 -= 10
                             }
                         }
-                    }
-                    else{
-                        when(oklada){
-                            "SEBE"->{
-                                stanje-=ulog
-                            }
-                            "IZJEDNAČENO"->{
-                                stanje+=ukupniUlog
-                            }
-                            "BANKARA"->{
-                                stanje-=ulog
-                            }
-                        }
-                    }
-                }
-                else{
-                    while(zbroj1>10){
-                        zbroj1-=10
-                    }
-                    while(zbroj2>10){
-                        zbroj2-=10
-                    }
-                }
 
-                profit=stanje-1000
-            },
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red, contentColor = Color.White),
+                        profit = stanje - 1000
+                        ukupniUlog = bankUlog + ulog
+                        if (profit < 0) {
+                            bojaProfit = "#ff0000"
+                        } else {
+                            bojaProfit = "#000000"
+                        }
+                    if(stanje<0){
+                        stanje=0
+                        System.exit(-1)
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color.Red,
+                    contentColor = Color.White
+                ),
                 modifier = Modifier
                     //.align(Alignment.CenterHorizontally)
-                    .width(200.dp),) {
+                    .width(200.dp),
+            ) {
                 Text(text = "IGRAJ",
                     fontWeight = FontWeight.Bold,
                     fontSize = 30.sp
@@ -352,7 +400,7 @@ fun glavna(){
             Text(text = "Stanje na računu: $stanje€",
             fontWeight = FontWeight.Bold)
             Text(text = "Profit: $profit €",
-                fontWeight = FontWeight.Bold)
+                fontWeight = FontWeight.Bold,color=Color(bojaProfit.toColorInt()))
             /*Text(text = "Dobiveno: $dobiveno€",
                 fontWeight = FontWeight.Bold)*/
         }
@@ -370,7 +418,6 @@ fun obrnuta(sl:Int){
 
     )
 }
-
 
 @Preview(showBackground = true)
 @Composable
